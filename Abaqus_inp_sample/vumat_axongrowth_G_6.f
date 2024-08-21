@@ -1,8 +1,8 @@
       module Globalparameters
         
-		integer N		
+	integer N		
         real*8 pi,aangle,minangle,maxangle,minxvalue,maxxvalue,a
-	    real*8 minyvalue,maxyvalue,mintime,maxtime,alambda,tstar
+	real*8 minyvalue,maxyvalue,mintime,maxtime,alambda,tstar
         parameter(zero=0.d0,one=1.d0,two=2.d0,three=3.d0,half=0.5d0,
      +     third=1.d0/3.d0,two_third=2.d0/3.d0,four=4.d0)
         parameter(N=2,tstar = 300, a=0.015d0)
@@ -22,7 +22,7 @@
       end module    
 C***********************************************************************	  
       SUBROUTINE VEXTERNALDB(LOP,I_ARRAY,NIARRAY,R_ARRAY,NRARRAY)
-	  use Globalparameters
+      use Globalparameters
       INCLUDE 'vaba_param.inc'
 !-----------------------------------------------------------------------
 !-----Include additional file for memory management
@@ -64,21 +64,21 @@ C***********************************************************************
 !     Declaration of internal variables
 !-----------------------------------------------------------------------
       integer kStep,kInc,kNel,KPROCESSNUM
-	  integer myThreadID,check,i_error
+      integer myThreadID,check,i_error
       integer LENJOBNAME,LENOUTDIR,NUMPROCESSES
       character*256 JOBNAME,OUTDIR,filename,cwd
       character*1000 line
       REAL*8 x(N),y(N),angle(N),time(N),mindist        ! ARRAYs 
-	  real*8 xx(N),yy(N),aaangle(N),xxx(N),aaaangle(N)
+      real*8 xx(N),yy(N),aaangle(N),xxx(N),aaaangle(N)
       integer ID_x,ID_y,ID_angle,ID_time,ID_inc              ! ID for pointers
       parameter(ID_x=1,ID_y=2,ID_angle=3,ID_time=4)   ! ID for pointers  	  
       pointer(ptr_x, x)         ! pointer link
-	  pointer(ptr_y, y)         ! pointer link
-	  pointer(ptr_angle, angle) ! pointer link
-	  pointer(ptr_time, time)   ! pointer link
+      pointer(ptr_y, y)         ! pointer link
+      pointer(ptr_angle, angle) ! pointer link
+      pointer(ptr_time, time)   ! pointer link
 	  
-	  CALL VGETJOBNAME( JOBNAME, LENJOBNAME )
-	  ! cwd = 'P:\AKBAR\Axons Guidance\simulations\final tests\final\Different Growth Rates\New_with_coords\'
+      CALL VGETJOBNAME( JOBNAME, LENJOBNAME )
+      ! cwd = 'P:\AKBAR\Axons Guidance\simulations\final tests\final\Different Growth Rates\New_with_coords\'
       ! filename = trim(cwd)//trim(JOBNAME)//'.txt'
 !-----------------------------------------------------------------------
 !     Initialization
@@ -99,11 +99,11 @@ C***********************************************************************
 !          CREATE GLOBAL ARRAYS
 !--------------------------------------------------------------------------
         ptr_x     = SMAFloatArrayCreate(ID_x, N, 0.0)
-		ptr_y     = SMAFloatArrayCreate(ID_y, N, 0.0)
-		ptr_angle = SMAFloatArrayCreate(ID_angle, N, 0.0)
-		ptr_time  = SMAFloatArrayCreate(ID_time, N, 0.0)	
+	ptr_y     = SMAFloatArrayCreate(ID_y, N, 0.0)
+	ptr_angle = SMAFloatArrayCreate(ID_angle, N, 0.0)
+	ptr_time  = SMAFloatArrayCreate(ID_time, N, 0.0)	
 			
-	    IF(kInc==0)THEN	
+	IF(kInc==0)THEN	
           if (KPROCESSNUM==0) then	
             !generate random initial points	
             call random_seed()
@@ -131,10 +131,10 @@ C***********************************************************************
             end if
           endif			  
           call MPI_BCAST(x, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-		  call MPI_BCAST(y, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-		  call MPI_BCAST(angle, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-		  call MPI_BCAST(time, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-	      call MPI_BARRIER( MPI_COMM_WORLD, i_error) 
+	  call MPI_BCAST(y, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
+	  call MPI_BCAST(angle, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
+	  call MPI_BCAST(time, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
+	  call MPI_BARRIER( MPI_COMM_WORLD, i_error) 
         ENDIF
 
 !-----------------------------------------------------------------------
@@ -149,28 +149,27 @@ C***********************************************************************
 	    ptr_y     = SMAFloatArrayAccess(ID_y)
 	    ptr_angle = SMAFloatArrayAccess(ID_angle)
 	    ptr_time  = SMAFloatArrayAccess(ID_time)
-		call MPI_BARRIER( MPI_COMM_WORLD, i_error)
-		call MPI_REDUCE(x, xx, N, MPI_REAL8, MPI_MAX, 0, MPI_COMM_WORLD, i_error) 
-		call MPI_REDUCE(x, xxx, N, MPI_REAL8, MPI_MIN, 0, MPI_COMM_WORLD, i_error)
-		call MPI_REDUCE(angle, aaangle, N, MPI_REAL8, MPI_MAX, 0, MPI_COMM_WORLD, i_error) 
-		call MPI_REDUCE(angle, aaaangle, N, MPI_REAL8, MPI_MIN, 0, MPI_COMM_WORLD, i_error)		
-		if (KPROCESSNUM==0) then
-		    x = (xx + xxx)/2
-			angle = (aaangle+aaaangle)/2
-		end if
-		call MPI_BARRIER( MPI_COMM_WORLD, i_error)
-		call MPI_BCAST(x, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-		call MPI_BCAST(angle, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
-		call MPI_ALLREDUCE(y, yy, N, MPI_REAL8, MPI_MAX, MPI_COMM_WORLD, i_error)
-		y = yy
+	    call MPI_BARRIER( MPI_COMM_WORLD, i_error)
+	    call MPI_REDUCE(x, xx, N, MPI_REAL8, MPI_MAX, 0, MPI_COMM_WORLD, i_error) 
+	    call MPI_REDUCE(x, xxx, N, MPI_REAL8, MPI_MIN, 0, MPI_COMM_WORLD, i_error)
+	    call MPI_REDUCE(angle, aaangle, N, MPI_REAL8, MPI_MAX, 0, MPI_COMM_WORLD, i_error) 
+	    call MPI_REDUCE(angle, aaaangle, N, MPI_REAL8, MPI_MIN, 0, MPI_COMM_WORLD, i_error)		
+	    if (KPROCESSNUM==0) then
+		x = (xx + xxx)/2
+		angle = (aaangle+aaaangle)/2
+	    end if
+	    call MPI_BARRIER( MPI_COMM_WORLD, i_error)
+	    call MPI_BCAST(x, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
+	    call MPI_BCAST(angle, N, MPI_REAL8, 0, MPI_COMM_WORLD, i_error)
+	    call MPI_ALLREDUCE(y, yy, N, MPI_REAL8, MPI_MAX, MPI_COMM_WORLD, i_error)
+	    y = yy
 		
-        call MPI_BARRIER( MPI_COMM_WORLD, i_error)		
-		! if (KPROCESSNUM==0) then
-		    ! open(unit=4, file=filename, STATUS = 'unknown', ACTION = 'write', POSITION='append')
-			! WRITE(4, '(100F10.4, 100F10.4, 100F10.4)') (x(ii), ii=1,N), (y(ii), ii=1,N), (angle(ii), ii=1,N)
-		    ! close(4)
-		! end if		
-		
+            call MPI_BARRIER( MPI_COMM_WORLD, i_error)		
+	    ! if (KPROCESSNUM==0) then
+	    ! open(unit=4, file=filename, STATUS = 'unknown', ACTION = 'write', POSITION='append')
+	    ! WRITE(4, '(100F10.4, 100F10.4, 100F10.4)') (x(ii), ii=1,N), (y(ii), ii=1,N), (angle(ii), ii=1,N)
+	    ! close(4)
+	    ! end if		
 		
 !-----------------------------------------------------------------------
 !     End of the increment
