@@ -298,7 +298,7 @@ C
 	  integer LENJOBNAME,LENOUTDIR,KPROCESSNUM,myThreadID,r
 
       integer i,j,ii,jj,kk,km,damage,process_rank,kblock,check
-	  integer ABA_COMM_WORLD,counting,i_error
+	  integer ABA_COMM_WORLD,counting,i_error,index
       real*8 Iden(3,3),F_tau(3,3),U_tau(3,3),Be_tau(3,3),a
       real*8 T_tau(3,3),R_tau(3,3),U_inv(3,3),detF,trace
       real*8 pwrinct,stress_power,Je,JU,detU,Jg,b0(3,3),a0(3,3)
